@@ -13,70 +13,96 @@ import numpy as np
 
 # Greatest Common Divisor (gcd) Function
 def gcd(a, b):
+    # Ensure that 'a' is greater than or equal to 'b' by swapping if necessary
     if a < b:
         return gcd(b, a)
+    
+    # Base case: if 'b' divides 'a' exactly, then 'b' is the GCD
     elif a % b == 0:
         return b
+    
+    # Recursive case: apply Euclidean algorithm
     else:
         return gcd(b, a % b)
 
-# Modular Exponentiation Function (Square-and-Multiply Algorithm)
+
+
+# Modular Exponentiation Function using the Square-and-Multiply Algorithm
 def power(a, b, c):
-    result = 1
-    base = a % c
+    result = 1                # Initialize result to 1
+    base = a % c              # Reduce base 'a' modulo 'c' to keep numbers small
 
-    while b > 0:
-        if b % 2 == 1:
-            result = (result * base) % c
-        base = (base * base) % c
-        b //= 2
+    while b > 0:              # Loop while exponent 'b' is greater than 0
+        if b % 2 == 1:        # If the current bit of 'b' is 1 (i.e., b is odd)
+            result = (result * base) % c  # Multiply result by base modulo 'c'
+        base = (base * base) % c          # Square the base modulo 'c'
+        b //= 2               # Divide exponent 'b' by 2 (shift right)
 
-    return result
+    return result             # Return the final result of (a^b) mod c
+
+
 
 # Generate Large Prime Number using Fermat Primality Test
+# Generate a large prime number using Fermat's Primality Test
 def generate_prime_fermat(bits):
     while True:
+        # Generate a random odd integer with the specified number of bits
         p = random.getrandbits(bits)
+
+        # Check if 'p' is odd and satisfies Fermat's little theorem for base 2
+        # i.e., 2^(p-1) ≡ 1 mod p — a probabilistic test for primality
         if p % 2 != 0 and pow(2, p - 1, p) == 1:
+            
+            # Ensure the number has the exact bit length (avoid shorter primes)
             if p.bit_length() != bits:
-                continue
-            return p
+                continue  # If too short, try again
+            
+            return p  # Return the candidate if it passes all checks
 
-# Generate Generator for Finite Field
+
+
+# Generate a generator for the multiplicative group of integers modulo p
 def find_generator(p):
+    # Try candidate generators starting from 2 up to p-1
     for g in range(2, p):
+        # Check that g^((p-1)/2) mod p != 1 and g^((p-1)/3) mod p != 1
+        # This ensures g is a primitive root mod p (not generating a smaller subgroup)
         if pow(g, (p - 1) // 2, p) != 1 and pow(g, (p - 1) // 3, p) != 1:
-            return g
+            return g  # Return the first suitable generator found
 
-# Asymmetric Key Generation
+# Generate ElGamal asymmetric key pair
 def generate_keys_elgamal(bits):
-    q = generate_prime_fermat(bits)
-    g = find_generator(q)
+    q = generate_prime_fermat(bits)  # Generate a large prime q
+    g = find_generator(q)             # Find a suitable generator g modulo q
+
+    # Define private key range: choose a large private key roughly half the bit size of q
     min_private_key = 2 ** (bits // 2)
     max_private_key = q - 1
-    private_key = random.randint(min_private_key, max_private_key)
-    public_key = power(g, private_key, q)
-    return q, g, private_key, public_key
+    private_key = random.randint(min_private_key, max_private_key)  # Random private key in range
 
-# Asymmetric Encryption
+    public_key = power(g, private_key, q)  # Compute public key: g^private_key mod q
+    return q, g, private_key, public_key  # Return all parameters
+
+# ElGamal encryption of a plaintext message string
 def encrypt_elgamal(msg, q, g, public_key):
     ciphertext = []
     for char in msg:
-        k = random.randint(2, q - 1)
-        s = power(public_key, k, q)
+        k = random.randint(2, q - 1)       # Choose random ephemeral key k
+        s = power(public_key, k, q)        # Compute shared secret s = (public_key)^k mod q
+        # Append ciphertext pair: (g^k mod q, (char * s) mod q)
         ciphertext.append((power(g, k, q), (ord(char) * s) % q))
     return ciphertext
 
-
-# Asymmetric Decryption
+# ElGamal decryption of ciphertext pairs
 def decrypt_elgamal(ciphertext, q, private_key):
     decrypted_message = ''
     for c1, c2 in ciphertext:
-        h = pow(c1, private_key, q)
-        h_inv = pow(h, -1, q)
-        decrypted_char = chr((c2 * h_inv) % q)
-        decrypted_message += decrypted_char
+        h = pow(c1, private_key, q)         # Compute shared secret h = c1^private_key mod q
+        h_inv = pow(h, -1, q)               # Compute modular inverse of h modulo q
+        decrypted_char = chr((c2 * h_inv) % q)  # Recover original character from ciphertext
+        decrypted_message += decrypted_char # Append to decrypted message string
     return decrypted_message
+
 
 
 
@@ -917,6 +943,11 @@ elif encryption_scheme == "Blum-Goldwasser":
         st.subheader("Ciphertext")
         st.write("Ciphertext:", st.session_state["ciphertext"])
 
+
+
+
+    
+
     # Display initial seed
     if "initial_seed" in st.session_state:
         st.subheader("Initial Seed")
@@ -1236,14 +1267,14 @@ elif encryption_scheme == "Elgamal and 3DES (Hybrid)":
    
 
 # Prompt the user to enter the prime number (q) as a string
-    q_dec_str = st.text_input("Enter prime number (q) from original key generation:")
+    q_dec_str = st.text_input("Enter Prime number (q) from original key generation:")
 
 # Convert the input string to an integer if it's not empty
     q_dec = int(q_dec_str) if q_dec_str.strip() else None
     
     
 # Prompt the user to enter the private key as a string
-    private_key_dec_str = st.text_input("Enter your private key from original key generation:")
+    private_key_dec_str = st.text_input("Enter your Private Key from original key generation:")
 
 # Convert the input string to an integer if it's not empty
     private_key_dec = int(private_key_dec_str) if private_key_dec_str.strip() else None
@@ -1255,7 +1286,4 @@ elif encryption_scheme == "Elgamal and 3DES (Hybrid)":
             decrypted_message = decrypt_elgamal(ciphertext, q_dec, private_key_dec)
             st.write("Decrypted Message:", decrypted_message)
         except Exception:
-            st.error("An error occurred during decryption.")
-   
-    
-     
+            st.error("An erro

@@ -1,4 +1,4 @@
-# Practical Aspects of Modern Cryptography Final Project
+# Practical Aspects of Modern Cryptography Project
 
 **By Tahim Bhuiya**
 
