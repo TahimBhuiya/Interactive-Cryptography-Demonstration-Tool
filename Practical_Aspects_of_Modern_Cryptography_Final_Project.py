@@ -256,34 +256,50 @@ p_des = [16,  7, 20, 21,
 
 
 def f_des(r, k):
+    # Create a 48-bit array initialized to zeros to hold the expanded R
     expand_r = np.zeros(48, dtype=int)
 
-    # Expansion permutation
+    # Expansion permutation: Expand 32-bit input R to 48 bits using the E-table (e_des)
+    # and reverse the index to match bit ordering
     for i in range(48):
         expand_r[47 - i] = r[32 - e_des[i]]
 
-    # XOR with round key
+    # XOR the expanded R with the 48-bit round key K
     expand_r = expand_r ^ k
 
+    # Prepare a 32-bit array for the output of the S-box substitutions
     output = np.zeros(32, dtype=int)
     x = 0
-    # Applying S-box substitution
+
+    # Apply S-box substitution for each of the 8 S-boxes (6 bits each)
     for i in range(0, 48, 6):
+        # Calculate row (using first and last bit of the 6-bit group)
         row = expand_r[47 - i] * 2 + expand_r[47 - i - 5]
+
+        # Calculate column (using the middle 4 bits)
         col = expand_r[47 - i - 1] * 8 + expand_r[47 - i - 2] * 4 + expand_r[47 - i - 3] * 2 + expand_r[47 - i - 4]
+
+        # Lookup value from corresponding S-box
         num = s_box_des[i // 6][row][col]
+
+        # Convert the result to 4-bit binary
         binary = [int(x) for x in format(num, '04b')]
+
+        # Store the 4-bit output in the correct position in the output array (reverse order)
         output[31 - x] = binary[3]
         output[31 - x - 1] = binary[2]
         output[31 - x - 2] = binary[1]
         output[31 - x - 3] = binary[0]
         x += 4
 
+    # Copy output to temporary array before final permutation
     temp = output.copy()
-    # Permutation
+
+    # Final 32-bit permutation using P-table (p_des)
     for i in range(32):
         output[31 - i] = temp[32 - p_des[i]]
 
+    # Return the final 32-bit output after S-box substitution and permutation
     return output
 
 
