@@ -413,17 +413,19 @@ def pad_plaintext(plaintext):
     return plaintext + padding
 
 
-
-
-
-
-# Function to split plaintext into 64-bit blocks
+# Function to split plaintext into 64-bit (8-byte) blocks and convert each to a bitset
 def split_blocks(plaintext):
-    blocks = []
+    blocks = []  # Initialize list to hold the blocks
+
+    # Iterate over the plaintext in 8-byte steps
     for i in range(0, len(plaintext), 8):
-        block = plaintext[i:i+8]
-        blocks.append(char_to_bitset(block))
-    return blocks
+        block = plaintext[i:i+8]  # Extract an 8-byte block
+        blocks.append(char_to_bitset(block))  # Convert block to 64-bit array and add to list
+
+    return blocks  # Return list of 64-bit bitset blocks
+
+
+
 
 # Function to merge 64-bit blocks into a byte string
 def merge_blocks(blocks):
