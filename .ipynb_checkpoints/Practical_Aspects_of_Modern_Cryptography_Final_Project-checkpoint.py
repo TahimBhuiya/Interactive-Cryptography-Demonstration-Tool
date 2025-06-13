@@ -363,11 +363,18 @@ def generate_keys_des():
 
 
 def char_to_bitset(s):
+    # Initialize a 64-bit array (as integers) to store the bit representation of the input string
     bits = np.zeros(64, dtype=int)
-    for i in range(8):
-        for j in range(8):
+
+    # Convert each of the 8 characters in the string to 8 bits (total 64 bits)
+    for i in range(8):  # Loop over each character (assumed to be 8 characters long)
+        for j in range(8):  # Loop over each bit (0–7) in the character
+            # Extract the j-th bit of character s[i] using bit shifting and bitwise AND
             bits[i * 8 + j] = (s[i] >> j) & 1
+
+    # Return the 64-bit array representing the entire string
     return bits
+
 
 
 def bitset_to_string(bit):
