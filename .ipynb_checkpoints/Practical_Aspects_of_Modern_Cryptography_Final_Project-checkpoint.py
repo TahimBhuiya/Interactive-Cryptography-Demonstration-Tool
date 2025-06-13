@@ -322,40 +322,43 @@ def left_shift_des(k, shift):
 
 
 def generate_keys_des():
-    global key_des, sub_key_des
-    key_real = np.zeros(56, dtype=int)
-    left = np.zeros(28, dtype=int)
-    right = np.zeros(28, dtype=int)
-    key_compress = np.zeros(48, dtype=int)
+    global key_des, sub_key_des  # key_des: 64-bit original key, sub_key_des: array to store 16 round keys
 
-    # Permute the original key according to PC-1 permutation table
+    # Initialize arrays for key processing
+    key_real = np.zeros(56, dtype=int)     # 56-bit key after PC-1 permutation
+    left = np.zeros(28, dtype=int)         # Left half of key (28 bits)
+    right = np.zeros(28, dtype=int)        # Right half of key (28 bits)
+    key_compress = np.zeros(48, dtype=int) # Final 48-bit subkey for each round
+
+    # Apply the PC-1 permutation to the original 64-bit key to produce a 56-bit key
     for i in range(56):
         key_real[55 - i] = key_des[64 - pc_1_des[i]]
 
-    # Generate subkeys for each round
+    # Generate 16 round keys
     for round in range(16):
-        # Split the real key into left and right halves
+        # Split the 56-bit key into left and right 28-bit halves
         for i in range(28, 56):
             left[i - 28] = key_real[i]
         for i in range(28):
             right[i] = key_real[i]
 
-        # Perform left circular shift on both halves
+        # Perform left circular shift on both halves according to the round's shift amount
         left = left_shift_des(left, shift_bits_des[round])
         right = left_shift_des(right, shift_bits_des[round])
 
-        # Merge the shifted halves
+        # Merge the shifted halves back into key_real
         for i in range(28, 56):
             key_real[i] = left[i - 28]
         for i in range(28):
             key_real[i] = right[i]
 
-        # Compress the key using PC-2 permutation table
+        # Apply PC-2 permutation to reduce the 56-bit combined key to 48 bits
         for i in range(48):
             key_compress[47 - i] = key_real[56 - pc_2_des[i]]
 
-        # Store the subkey for the current round
+        # Store the 48-bit subkey for this round
         sub_key_des[round] = key_compress
+
 
 
 
