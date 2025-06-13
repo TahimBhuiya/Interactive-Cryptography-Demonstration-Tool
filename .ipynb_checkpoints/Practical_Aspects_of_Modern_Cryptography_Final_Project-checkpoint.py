@@ -378,15 +378,22 @@ def char_to_bitset(s):
 
 
 def bitset_to_string(bit):
-    res = b""
+    res = b""  # Initialize an empty byte string to store the result
+
+    # Loop over each of the 8 bytes (8 * 8 = 64 bits total)
     for i in range(8):
-        c = 0x00
+        c = 0x00  # Start with 0 for the current character
+
+        # Process 8 bits for the current byte, from most significant to least significant bit
         for j in range(7, -1, -1):
-            c = c + bit[i * 8 + j]
+            c = c + bit[i * 8 + j]  # Add the current bit (0 or 1)
             if j != 0:
-                c = c * 2  # Left shift
+                c = c * 2  # Left shift (multiply by 2), except after the last bit
+
+        # Convert the constructed byte to a single-byte and append it to the result
         res += bytes([c])
-    return res
+
+    return res  # Return the final 8-byte string
 
 
 
