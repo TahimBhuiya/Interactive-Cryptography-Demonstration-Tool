@@ -401,11 +401,21 @@ def bitset_to_string(bit):
     
     
     
-# Function to pad plaintext to a multiple of block size (64 bits)
+# Function to pad plaintext to a multiple of block size (64 bits or 8 bytes)
 def pad_plaintext(plaintext):
+    # Calculate how many bytes of padding are needed (between 1 and 8)
     padding_len = 8 - len(plaintext) % 8
+
+    # Create the padding: a sequence of bytes, each equal to the padding length (PKCS#5/PKCS#7 style)
     padding = bytes([padding_len]) * padding_len
+
+    # Append the padding to the original plaintext and return
     return plaintext + padding
+
+
+
+
+
 
 # Function to split plaintext into 64-bit blocks
 def split_blocks(plaintext):
