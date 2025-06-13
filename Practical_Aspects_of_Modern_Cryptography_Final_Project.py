@@ -304,13 +304,21 @@ def f_des(r, k):
 
 
 def left_shift_des(k, shift):
+    # Make a copy of the input array `k` (expected to be 28 bits)
     temp = k.copy()
+
+    # Perform a circular left shift by `shift` positions
+    # This loop goes from the most significant bit (index 27) down to 0
     for i in range(27, -1, -1):
+        # If shifting past the beginning of the array, wrap around from the end
         if i - shift < 0:
             k[i] = temp[i - shift + 28]
         else:
             k[i] = temp[i - shift]
+
+    # Return the left-shifted array
     return k
+
 
 
 def generate_keys_des():
