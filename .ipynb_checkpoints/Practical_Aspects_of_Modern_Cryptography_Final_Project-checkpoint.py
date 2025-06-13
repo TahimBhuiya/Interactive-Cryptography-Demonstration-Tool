@@ -425,14 +425,18 @@ def split_blocks(plaintext):
     return blocks  # Return list of 64-bit bitset blocks
 
 
-
-
-# Function to merge 64-bit blocks into a byte string
+# Function to merge 64-bit bitset blocks back into a single byte string
 def merge_blocks(blocks):
-    plaintext = b""
+    plaintext = b""  # Initialize an empty byte string to store the result
+
+    # Iterate through each 64-bit block
     for block in blocks:
+        # Convert the 64-bit bit array back into an 8-byte string and append it
         plaintext += bitset_to_string(block)
-    return plaintext
+
+    return plaintext  # Return the reconstructed plaintext
+
+    
 
 # Function to encrypt plaintext of any size
 def encrypt_des(plaintext, key):
