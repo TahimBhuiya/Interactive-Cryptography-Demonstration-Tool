@@ -478,46 +478,47 @@ def decrypt_des(ciphertext, key):
 
 
 # Modify the encryption and decryption functions to operate on single blocks
-# Modify the encryption and decryption functions to operate on single blocks
+# Modify the encryption and decryption functions to operate on single 64-bit blocks
 def encrypt_des_block(plain, key):
-    global sub_key_des
-    cipher = np.zeros(64, dtype=int)
-    current_bits = np.zeros(64, dtype=int)
-    left = np.zeros(32, dtype=int)
-    right = np.zeros(32, dtype=int)
-    new_left = np.zeros(32, dtype=int)
+    global sub_key_des  # Use globally stored round subkeys
 
-    # Initial permutation of the plaintext
+    # Initialize arrays to store bits
+    cipher = np.zeros(64, dtype=int)        # Final ciphertext block (64 bits)
+    current_bits = np.zeros(64, dtype=int)  # Intermediate state during permutation
+    left = np.zeros(32, dtype=int)          # Left 32 bits
+    right = np.zeros(32, dtype=int)         # Right 32 bits
+    new_left = np.zeros(32, dtype=int)      # Temporary holder for new left half
+
+    # Step 1: Initial permutation (IP)
     for i in range(64):
         current_bits[63 - i] = plain[64 - ip_des[i]]
 
-    # Split the plaintext into left and right halves
+    # Step 2: Split 64-bit block into two 32-bit halves
     for i in range(32, 64):
         left[i - 32] = current_bits[i]
     for i in range(32):
         right[i] = current_bits[i]
 
-    # Perform 16 rounds of DES encryption
+    # Step 3: Perform 16 DES rounds
     for round in range(16):
-        # Save the previous left half
-        new_left = right.copy()
-        # Compute the new right half using the round function and subkey
+        new_left = right.copy()  # Store current right half as new left
+        # Apply the DES round function f to the right half and current subkey
         right = left ^ f_des(right, sub_key_des[round])
-        # Set the new left half to the previous right half
-        left = new_left
+        left = new_left  # Update left half
 
-    # Combine the left and right halves
+    # Step 4: Combine left and right halves (note the swap after the final round)
     for i in range(32):
         cipher[i] = left[i]
     for i in range(32, 64):
         cipher[i] = right[i - 32]
 
-    # Final permutation of the ciphertext
+    # Step 5: Final permutation (IP⁻¹)
     current_bits = cipher.copy()
     for i in range(64):
         cipher[63 - i] = current_bits[64 - ip_1_des[i]]
 
-    return cipher
+    return cipher  # Return the encrypted 64-bit block
+
 
 def decrypt_des_block(cipher, key):
     global sub_key_des
