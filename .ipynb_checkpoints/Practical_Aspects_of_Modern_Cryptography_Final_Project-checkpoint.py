@@ -457,16 +457,25 @@ def encrypt_des(plaintext, key):
     return merge_blocks(ciphertext_blocks)
 
 
-# Function to decrypt ciphertext of any size
+# Function to decrypt ciphertext of any size using DES
 def decrypt_des(ciphertext, key):
-    global sub_key_des
+    global sub_key_des  # Use global key schedule variable (used by DES rounds)
+
+    # Step 1: Split the ciphertext into 64-bit (8-byte) blocks
     blocks = split_blocks(ciphertext)
+
     plaintext_blocks = []
+
+    # Step 2: Decrypt each 64-bit block individually
     for block in blocks:
-        generate_keys_des()
-        plaintext_block = decrypt_des_block(block, key_des)
-        plaintext_blocks.append(plaintext_block)
+        generate_keys_des()  # Generate round keys (assumes key is set globally)
+        plaintext_block = decrypt_des_block(block, key_des)  # Decrypt the block with DES
+        plaintext_blocks.append(plaintext_block)  # Store the decrypted block
+
+    # Step 3: Merge all decrypted blocks into the final plaintext
+    # Strip padding zeros added during encryption
     return merge_blocks(plaintext_blocks).rstrip(bytes([0]))
+
 
 # Modify the encryption and decryption functions to operate on single blocks
 # Modify the encryption and decryption functions to operate on single blocks
