@@ -632,14 +632,24 @@ def extended_euclidean(a, b):
         return gcd, y, x - (a // b) * y
 
 
+# Function to compute the modular inverse of a modulo m
 def modular_inverse(a, m):
-    # """
-    # Compute the modular inverse of a modulo m.
-    # """
-    gcd, x, _ = extended_euclidean(a, m)
+    """
+    Computes the modular inverse of a modulo m using the Extended Euclidean Algorithm.
+    The modular inverse is a value x such that:
+        (a * x) % m == 1
+
+    Raises a ValueError if the inverse does not exist (i.e., a and m are not coprime).
+    """
+    gcd, x, _ = extended_euclidean(a, m)  # Get gcd and the coefficient x such that ax + my = gcd(a, m)
+
+    # If gcd is not 1, inverse does not exist
     if gcd != 1:
         raise ValueError(f"{a} has no inverse modulo {m}")
+
+    # Ensure the result is in the range [0, m-1]
     return x % m
+
 
 def generate_prime_congruent_3_mod_4(bit_length):
     # """
