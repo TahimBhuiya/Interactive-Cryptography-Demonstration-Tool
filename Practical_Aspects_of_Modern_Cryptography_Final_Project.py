@@ -564,17 +564,22 @@ def decrypt_des_block(cipher, key):
 
 
 
+# Function to perform Triple DES (3DES) encryption
 def encrypt_3des(plaintext, key1, key2, key3):
-    # Encrypt plaintext using first key
+    # Step 1: Encrypt the plaintext with the first key (K1)
     intermediate_cipher = encrypt_des(plaintext, key1)
-    
-    # Decrypt the intermediate ciphertext using the second key
+
+    # Step 2: Decrypt the result with the second key (K2)
+    # This unusual decryption step is part of the EDE (Encrypt-Decrypt-Encrypt) 3DES scheme
     decrypted_intermediate = decrypt_des(intermediate_cipher, key2)
-    decrypted_intermediate=remove_padding(decrypted_intermediate)
-    # Encrypt the decrypted ciphertext using the third key
+    decrypted_intermediate = remove_padding(decrypted_intermediate)  # Clean any padding if applied during intermediate DES steps
+
+    # Step 3: Encrypt the result again with the third key (K3)
     final_cipher = encrypt_des(decrypted_intermediate, key3)
-    
+
+    # Return the final ciphertext after 3DES processing
     return final_cipher
+
 
 
 def decrypt_3des(cipher_text, key1, key2, key3):
