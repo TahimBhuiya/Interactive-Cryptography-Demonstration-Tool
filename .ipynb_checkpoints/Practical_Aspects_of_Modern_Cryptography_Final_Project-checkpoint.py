@@ -520,45 +520,47 @@ def encrypt_des_block(plain, key):
     return cipher  # Return the encrypted 64-bit block
 
 
+# Function to decrypt a single 64-bit block using DES
 def decrypt_des_block(cipher, key):
-    global sub_key_des
-    plain = np.zeros(64, dtype=int)
-    current_bits = np.zeros(64, dtype=int)
-    left = np.zeros(32, dtype=int)
-    right = np.zeros(32, dtype=int)
-    new_left = np.zeros(32, dtype=int)
+    global sub_key_des  # Use globally stored subkeys (generated beforehand)
 
-    # Initial permutation of the ciphertext
+    # Initialize arrays to store intermediate and final values
+    plain = np.zeros(64, dtype=int)         # Final decrypted plaintext block (64 bits)
+    current_bits = np.zeros(64, dtype=int)  # Intermediate state after initial permutation
+    left = np.zeros(32, dtype=int)          # Left 32-bit half
+    right = np.zeros(32, dtype=int)         # Right 32-bit half
+    new_left = np.zeros(32, dtype=int)      # Temporary holder for new left half
+
+    # Step 1: Initial permutation (IP) on the ciphertext block
     for i in range(64):
         current_bits[63 - i] = cipher[64 - ip_des[i]]
 
-    # Split the ciphertext into left and right halves
+    # Step 2: Split 64-bit block into left and right 32-bit halves
     for i in range(32, 64):
         left[i - 32] = current_bits[i]
     for i in range(32):
         right[i] = current_bits[i]
 
-    # Perform 16 rounds of DES decryption
-    for round in range(15, -1, -1):
-        # Save the previous left half
-        new_left = right.copy()
-        # Compute the new right half using the round function and subkey
+    # Step 3: Perform 16 DES rounds in reverse order (decryption)
+    for round in range(15, -1, -1):  # Iterate from round 15 down to 0
+        new_left = right.copy()  # Save current right half as new left
+        # Apply DES round function with corresponding subkey
         right = left ^ f_des(right, sub_key_des[round])
-        # Set the new left half to the previous right half
-        left = new_left
+        left = new_left  # Update left half
 
-    # Combine the left and right halves
+    # Step 4: Combine the left and right halves (note the final swap)
     for i in range(32):
         plain[i] = left[i]
     for i in range(32, 64):
         plain[i] = right[i - 32]
 
-    # Final permutation of the plaintext
+    # Step 5: Final permutation (IP⁻¹) to get the original plaintext block
     current_bits = plain.copy()
     for i in range(64):
         plain[63 - i] = current_bits[64 - ip_1_des[i]]
 
-    return plain
+    return plain  # Return the decrypted 64-bit block
+
 
 
 
