@@ -613,16 +613,24 @@ def decrypt_3des(cipher_text, key1, key2, key3):
 
 
 
+# Function to perform the Extended Euclidean Algorithm
 def extended_euclidean(a, b):
-    # """
-    # Extended Euclidean Algorithm to find gcd(a, b) and coefficients a, b such that
-    # ap + bq = gcd(a, b).
-    # """
+    """
+    Computes the greatest common divisor (gcd) of a and b,
+    as well as integers x and y such that:
+        ax + by = gcd(a, b)
+    This is useful for computing modular inverses and solving Diophantine equations.
+    """
+    # Base case: if b is 0, then gcd is a and the coefficients are (1, 0)
     if b == 0:
         return a, 1, 0
     else:
+        # Recursive call: compute gcd and coefficients for (b, a % b)
         gcd, x, y = extended_euclidean(b, a % b)
+
+        # Update coefficients using the recursion relation
         return gcd, y, x - (a // b) * y
+
 
 def modular_inverse(a, m):
     # """
