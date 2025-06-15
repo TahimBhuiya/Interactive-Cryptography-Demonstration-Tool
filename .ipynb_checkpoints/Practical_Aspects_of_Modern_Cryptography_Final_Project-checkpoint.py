@@ -825,10 +825,32 @@ def bg_encrypt_message(plaintext, public_key):
     return cipher, initial_seed
 
 
-# Function to decrypt ciphertext
+# Function to decrypt ciphertext using Blum-Goldwasser
 def bg_decrypt_message(ciphertext, initial_seed, public_key, private_key):
-    plaintext = blum_goldwasser_decrypt(ciphertext, initial_seed, public_key, len(ciphertext), *private_key)
+    """
+    Decrypts a ciphertext encrypted with the Blum-Goldwasser cryptosystem.
+
+    Parameters:
+        ciphertext (list of int): The binary encrypted message (ciphertext).
+        initial_seed (int): The seed used during encryption (sent alongside the ciphertext).
+        public_key (int): The Blum modulus N = p * q.
+        private_key (tuple): A tuple (p, q, a, b) where:
+            - p, q are the primes such that N = p * q,
+            - a = q * modular_inverse(q, p),
+            - b = p * modular_inverse(p, q) — for CRT reconstruction.
+
+    Returns:
+        list of int: The decrypted binary message (plaintext).
+    """
+    plaintext = blum_goldwasser_decrypt(
+        ciphertext,
+        initial_seed,
+        public_key,
+        len(ciphertext),
+        *private_key  # Unpacks p, q, a, b
+    )
     return plaintext
+
 
 
 
