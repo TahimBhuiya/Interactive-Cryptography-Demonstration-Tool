@@ -855,15 +855,37 @@ def bg_decrypt_message(ciphertext, initial_seed, public_key, private_key):
 
 
 
-# Function to generate keys for Blum-Goldwasser
+# Function to generate keys for the Blum-Goldwasser cryptosystem
 def generate_bg_keys(bit_length):
+    """
+    Generates the key components needed for Blum-Goldwasser encryption and decryption.
+
+    Parameters:
+        bit_length (int): The bit length of each prime number p and q to be generated.
+
+    Returns:
+        tuple:
+            - p (int): A prime congruent to 3 mod 4.
+            - q (int): Another prime congruent to 3 mod 4, distinct from p.
+            - a (int): Coefficient used for CRT recombination (solves a*p + b*q = gcd(p, q)).
+            - b (int): Coefficient used for CRT recombination.
+            - N (int): The public modulus N = p * q.
+    """
+    # Generate two distinct primes p and q, each congruent to 3 mod 4
     p, q, N = generate_blum_goldwasser(bit_length)
+
+    # Compute the modular inverses of p and q (not directly used here but useful)
     p_inverse = modular_inverse(p, q)
     q_inverse = modular_inverse(q, p)
+
+    # Use Extended Euclidean Algorithm to find a and b such that a*p + b*q = gcd(p, q)
     gcd, a, b = extended_euclidean(p, q)
+
+    # Adjust coefficients to ensure a is positive
     if a < 0:
         a += q
         b -= p
+
     return p, q, a, b, N
 
 
