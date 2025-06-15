@@ -674,15 +674,27 @@ def generate_prime_congruent_3_mod_4(bit_length):
             return prime
 
 
+# Function to generate Blum-Goldwasser key components
 def generate_blum_goldwasser(bit_length):
-    # """
-    # Generate a composite number N that is the product of two primes congruent to 3 modulo 4.
-    # """
+    """
+    Generates a Blum integer N = p * q, where both p and q are distinct prime numbers
+    congruent to 3 modulo 4. This structure is essential for the Blum-Goldwasser cryptosystem.
+
+    Parameters:
+        bit_length (int): Bit length of each prime (p and q).
+
+    Returns:
+        tuple: (p, q, N) where N = p * q and both p, q ≡ 3 mod 4
+    """
     while True:
+        # Generate two distinct primes p and q such that p ≡ q ≡ 3 mod 4
         p = generate_prime_congruent_3_mod_4(bit_length)
         q = generate_prime_congruent_3_mod_4(bit_length)
-        if p != q:  # Ensure p and q are different
-            return p, q, p * q
+
+        # Ensure p and q are different to avoid a weak modulus
+        if p != q:
+            return p, q, p * q  # Return the primes and their product N
+
 
 def is_prime(n, k=5):
     # """
