@@ -739,22 +739,38 @@ def is_prime(n, k=5):
     return True  # Probably prime
 
 
+# Function to encrypt a binary message using the Blum-Goldwasser cryptosystem
 def blum_goldwasser_encrypt(m, N):
-    # """
-    # Encrypt the plaintext using Blum-Goldwasser scheme.
-    # """
-    message_length = len(m)
+    """
+    Encrypts the binary plaintext `m` using the Blum-Goldwasser probabilistic public-key encryption scheme.
+
+    Parameters:
+        m (list of int): The binary plaintext message (list of 0s and 1s).
+        N (int): The public key (a Blum integer, i.e., N = p * q where p ≡ q ≡ 3 mod 4).
+
+    Returns:
+        tuple:
+            - cipher (list of int): The encrypted binary message (ciphertext).
+            - initial_seed (int): The initial seed used, needed for decryption.
+    """
+    message_length = len(m)  # Determine the number of bits in the plaintext
+
+    # Choose a random seed in the range [2, N-1] to start the pseudorandom sequence
     initial_seed = random.randint(2, N - 1)
 
-    encoded_message = []
+    encoded_message = []      # To store the pseudorandom bit stream
     current_seed = initial_seed
-    for _ in range(message_length):
-        encoded_message.insert(0, current_seed & 1)
-        current_seed = (current_seed * current_seed) % N
 
+    # Generate one pseudorandom bit for each bit of the message
+    for _ in range(message_length):
+        encoded_message.insert(0, current_seed & 1)  # Take the least significant bit of the seed
+        current_seed = (current_seed * current_seed) % N  # Update the seed using squaring modulo N
+
+    # XOR each bit of the message with the pseudorandom bit stream to get the ciphertext
     cipher = [(m[i] ^ encoded_message[i]) for i in range(message_length)]
 
-    return cipher, initial_seed
+    return cipher, initial_seed  # Return the ciphertext and the seed used for decryption
+
 
 def blum_goldwasser_decrypt(cipher, initial_seed, N, message_length, p, q, a, b):
     # """
