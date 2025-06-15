@@ -651,14 +651,28 @@ def modular_inverse(a, m):
     return x % m
 
 
+# Function to generate a prime number of specified bit length that is congruent to 3 mod 4
 def generate_prime_congruent_3_mod_4(bit_length):
-    # """
-    # Generate a prime number with the specified bit length that is congruent to 3 modulo 4.
-    # """
+    """
+    Generates a random prime number of the given bit length such that:
+        prime ≡ 3 (mod 4)
+    This condition is often required in cryptographic algorithms such as Blum Blum Shub
+    and Blum-Goldwasser.
+
+    Parameters:
+        bit_length (int): Desired bit length of the prime number.
+
+    Returns:
+        int: A prime number of the given bit length where prime % 4 == 3.
+    """
     while True:
-        prime = random.randint(2**(bit_length-1), 2**bit_length - 1)
+        # Generate a random number in the desired bit range
+        prime = random.randint(2**(bit_length - 1), 2**bit_length - 1)
+
+        # Check if it satisfies the congruence and primality conditions
         if prime % 4 == 3 and is_prime(prime):
             return prime
+
 
 def generate_blum_goldwasser(bit_length):
     # """
