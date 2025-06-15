@@ -772,20 +772,38 @@ def blum_goldwasser_encrypt(m, N):
     return cipher, initial_seed  # Return the ciphertext and the seed used for decryption
 
 
+# Function to decrypt a binary message using the Blum-Goldwasser cryptosystem
 def blum_goldwasser_decrypt(cipher, initial_seed, N, message_length, p, q, a, b):
-    # """
-    # Decrypt the ciphertext using Blum-Goldwasser scheme.
-    # """
+    """
+    Decrypts the ciphertext using the Blum-Goldwasser decryption scheme.
+
+    Parameters:
+        cipher (list of int): The encrypted binary message (ciphertext).
+        initial_seed (int): The final seed sent by the sender (used to reconstruct the pseudorandom sequence).
+        N (int): The Blum modulus N = p * q.
+        message_length (int): Length of the original message.
+        p (int): First prime factor of N (p ≡ 3 mod 4).
+        q (int): Second prime factor of N (q ≡ 3 mod 4).
+        a (int): Precomputed coefficient for CRT (usually q * modular_inverse(q, p)).
+        b (int): Precomputed coefficient for CRT (usually p * modular_inverse(p, q)).
+
+    Returns:
+        list of int: The decrypted binary message (plaintext).
+    """
+
     current_seed = initial_seed
-
     decoded_message = []
-    for _ in range(message_length):
-        decoded_message.insert(0, current_seed & 1)
-        current_seed = (current_seed * current_seed) % N
 
+    # Reconstruct the pseudorandom bit stream in reverse
+    for _ in range(message_length):
+        decoded_message.insert(0, current_seed & 1)  # Extract the LSB
+        current_seed = (current_seed * current_seed) % N  # Reverse iteration not done here
+
+    # XOR the ciphertext with the pseudorandom bits to recover plaintext
     plaintext = [(cipher[i] ^ decoded_message[i]) for i in range(message_length)]
 
     return plaintext
+
 
 
 
