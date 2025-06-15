@@ -807,9 +807,23 @@ def blum_goldwasser_decrypt(cipher, initial_seed, N, message_length, p, q, a, b)
 
 
 
+# Wrapper function to encrypt a plaintext message using Blum-Goldwasser
 def bg_encrypt_message(plaintext, public_key):
+    """
+    Encrypts a binary plaintext message using the Blum-Goldwasser cryptosystem.
+
+    Parameters:
+        plaintext (list of int): The binary plaintext message (e.g., list of 0s and 1s).
+        public_key (int): The Blum public key N = p * q, where both p and q ≡ 3 mod 4.
+
+    Returns:
+        tuple:
+            - cipher (list of int): The encrypted binary message.
+            - initial_seed (int): The initial seed used for pseudorandom bit generation (needed for decryption).
+    """
     cipher, initial_seed = blum_goldwasser_encrypt(plaintext, public_key)
     return cipher, initial_seed
+
 
 # Function to decrypt ciphertext
 def bg_decrypt_message(ciphertext, initial_seed, public_key, private_key):
