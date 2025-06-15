@@ -696,34 +696,48 @@ def generate_blum_goldwasser(bit_length):
             return p, q, p * q  # Return the primes and their product N
 
 
+# Function to perform the Miller-Rabin primality test
 def is_prime(n, k=5):
-    # """
-    # Miller-Rabin primality test.
-    # """
+    """
+    Determines whether a number n is probably prime using the Miller-Rabin primality test.
+
+    Parameters:
+        n (int): The number to test for primality.
+        k (int): The number of iterations (witnesses) to improve accuracy (default is 5).
+
+    Returns:
+        bool: True if n is probably prime, False if composite.
+    """
+    # Handle small base cases directly
     if n == 2 or n == 3:
         return True
     if n <= 1 or n % 2 == 0:
         return False
 
-    # Write n as (2^r)*d + 1
+    # Write n-1 as 2^r * d where d is odd
     r, d = 0, n - 1
     while d % 2 == 0:
         r += 1
         d //= 2
 
-    # Test for k random witnesses
+    # Perform k iterations (random witnesses)
     for _ in range(k):
-        a = random.randint(2, n - 2)
-        x = pow(a, d, n)
+        a = random.randint(2, n - 2)  # Choose a random base in [2, n-2]
+        x = pow(a, d, n)  # Compute a^d mod n
+
         if x == 1 or x == n - 1:
-            continue
+            continue  # Probably prime for this witness
+
+        # Square x up to r-1 times and check for non-trivial square roots of 1
         for _ in range(r - 1):
             x = pow(x, 2, n)
             if x == n - 1:
                 break
         else:
-            return False
-    return True
+            return False  # Composite
+
+    return True  # Probably prime
+
 
 def blum_goldwasser_encrypt(m, N):
     # """
