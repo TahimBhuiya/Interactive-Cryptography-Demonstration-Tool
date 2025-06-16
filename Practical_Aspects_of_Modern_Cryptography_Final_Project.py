@@ -1055,31 +1055,47 @@ elif encryption_scheme == "DES":
     # Key input
     # Decryption button
         # Key input
+    # Title for DES decryption section
     st.title("DES Decryption")
+    
+    # Input for DES key (must be 8 characters long)
     key_input = st.text_input("Enter the DES key (8 characters):", key="des_key_input")
-
-    # Ciphertext input
+    
+    # Input for the ciphertext in binary format (i.e., 64-bit multiple string like '01010101...')
     ciphertext_input = st.text_input("Enter the ciphertext (in binary):", key="des_ciphertext_input")
+    
+    # Button to trigger decryption
     decrypt_button = st.button("Decrypt")
-
+    
+    # Decrypt only when button is pressed and both fields are filled
     if decrypt_button and key_input and ciphertext_input:
+        # Check if the key is valid length
         if len(key_input) != 8:
             st.error("Error: Key must be 8 characters.")
         else:
             try:
+                # Convert binary string to bytes
                 ciphertext = int(ciphertext_input, 2).to_bytes(len(ciphertext_input) // 8, byteorder='big')
             except ValueError:
+                # If binary string is invalid
                 st.error("Error: Ciphertext must be in binary format.")
                 st.stop()
+    
+            # Ensure ciphertext length is a multiple of 64 bits (8 bytes)
             if len(ciphertext) % 8 != 0 or len(key_input) != 8:
                 st.error("Error: Ciphertext must be a multiple of 64 bits and the key must be 8 characters.")
                 st.stop()
             else:
+                # Perform DES decryption
                 plain_text = decrypt_des(ciphertext, key_input.encode())
-            # Remove padding
+    
+                # Remove padding added during encryption (typically PKCS#7 style)
                 padding_len = plain_text[-1]
                 decrypted_plain_text = plain_text[:-padding_len]
+    
+                # Display decrypted message as a UTF-8 string
                 st.write("Decrypted Plain Text:", decrypted_plain_text.decode())
+
 
 
 
