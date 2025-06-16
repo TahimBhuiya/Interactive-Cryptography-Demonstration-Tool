@@ -892,9 +892,20 @@ def generate_bg_keys(bit_length):
 
 
 
+# Function to remove padding from decrypted data
 def remove_padding(data):
-    padding_len = data[-1]
-    return data[:-padding_len]
+    """
+    Removes PKCS#7-style padding from the end of the byte data.
+
+    Parameters:
+        data (bytes or bytearray): The padded data.
+
+    Returns:
+        bytes or bytearray: The original unpadded data.
+    """
+    padding_len = data[-1]  # Last byte indicates the number of padding bytes added
+    return data[:-padding_len]  # Remove the padding
+
 
 
 
