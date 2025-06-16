@@ -1019,25 +1019,33 @@ if encryption_scheme == "ElGamal":
         except Exception:
             st.error("An error occurred during decryption.")
 
+# If DES is selected from the encryption scheme options
 elif encryption_scheme == "DES":
+    # Title for DES section
     st.title("DES Encryption (Symmetric)")
 
-    # Key input
+    # Prompt user to enter a DES key (must be 8 characters = 64 bits)
     key_input = st.text_input("Enter the DES key (8 characters):", key="des_key")
 
-    # Plaintext input
+    # Prompt user to enter the plaintext message to encrypt
     plaintext_input = st.text_input("Enter the plaintext message:", key="des_plaintext")
 
-    # Encryption button
+    # Button to trigger encryption
     encrypt_button = st.button("Encrypt")
 
+    # Perform encryption only if key and plaintext are both provided
     if encrypt_button and key_input and plaintext_input:
+        # Validate that the key is exactly 8 characters long
         if len(key_input) != 8:
             st.error("Error: Key must be 8 characters.")
         else:
+            # Call the DES encryption function
             cipher_text = encrypt_des(plaintext_input.encode(), key_input.encode())
+
+            # Display the resulting ciphertext in binary format for readability
             st.write("Cipher Text in Binary:")
             st.write(''.join(format(byte, '08b') for byte in cipher_text))
+
 
             
 
