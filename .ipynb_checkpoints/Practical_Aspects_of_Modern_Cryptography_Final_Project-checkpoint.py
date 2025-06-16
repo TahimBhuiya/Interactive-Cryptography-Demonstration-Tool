@@ -1105,34 +1105,35 @@ elif encryption_scheme == "3DES":
     # 3DES Encryption Section
     st.title("Triple DES Encryption (Symmetric)")
 
-    # Key input
+    # Prompt user for three 8-character DES keys
     key1_input = st.text_input("Enter the first DES key (8 characters):", key="des_key1_enc")
     key2_input = st.text_input("Enter the second DES key (8 characters):", key="des_key2_enc")
     key3_input = st.text_input("Enter the third DES key (8 characters):", key="des_key3_enc")
 
-    # Plaintext input
+    # Prompt user to enter plaintext to encrypt
     plaintext_input_3des = st.text_input("Enter the plaintext message:", key="3des_plaintext_enc")
 
     # Encryption button
     encrypt_button_3des = st.button("Encrypt (3DES)")
 
+    # Proceed only if all fields are filled
     if encrypt_button_3des and key1_input and key2_input and key3_input and plaintext_input_3des:
+        # Validate all keys are exactly 8 characters long
         if len(key1_input) != 8 or len(key2_input) != 8 or len(key3_input) != 8:
-            st.error("Error: Keys must be 64 bits each.")
+            st.error("Error: Keys must be 8 characters (64 bits) each.")
         else:
-            # Convert keys and plaintext to bit arrays
-            # key1_des = key1_input.encode()
-            # key2_des = key2_input.encode()
-            # key3_des = key3_input.encode()
-            # plaintext_3des = pad_message(plaintext_input_3des.encode())
+            # Encrypt the plaintext using 3DES (Encrypt-Decrypt-Encrypt with 3 different keys)
+            cipher_text_3des = encrypt_3des(
+                plaintext_input_3des.encode(), 
+                key1_input.encode(), 
+                key2_input.encode(), 
+                key3_input.encode()
+            )
 
-            # Encrypt the plaintext using 3DES
-            cipher_text_3des = encrypt_3des(plaintext_input_3des.encode(), key1_input.encode(), key2_input.encode(), key3_input.encode())
-
-            # Display ciphertext
+            # Display the encrypted ciphertext in binary format
             st.write("Cipher Text for 3DES (binary):")
-            
             st.write(''.join(format(byte, '08b') for byte in cipher_text_3des))
+
 
               
 
