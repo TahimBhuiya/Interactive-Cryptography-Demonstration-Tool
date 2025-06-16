@@ -924,42 +924,27 @@ def remove_padding(data):
 
 
 # Streamlit interface
-# Title of the project
 st.title("Practical Aspects of Modern Cryptography Final Project")
 
-# User selects the encryption scheme
-encryption_scheme = st.radio(
-    "Select Encryption Scheme:",
-    ("ElGamal", "DES", "3DES", "Blum-Goldwasser", "Elgamal and DES (Hybrid)", "Elgamal and 3DES (Hybrid)")
-)
+# Ask user to select encryption scheme
+encryption_scheme = st.radio("Select Encryption Scheme:", ("ElGamal", "DES", "3DES","Blum-Goldwasser", "Elgamal and DES (Hybrid)","Elgamal and 3DES (Hybrid)"))
 
-# If ElGamal is selected
 if encryption_scheme == "ElGamal":
     
-    # Section: ElGamal Key Generation
+    # ElGamal Encryption Section
     st.title("ElGamal Key Generation")
 
-    # User inputs the desired key size
-    key_size = st.number_input(
-        "Enter the key size in bits (preferably 16, 32, 64, 128, 256): ",
-        min_value=1,
-        value=16,
-        key="elgamal_key_size_enc"
-    )
+    # Get Key Size from User for Encryption
+    key_size = st.number_input("Enter the key size in bits (preferably 16, 32, 64, 128, 256): ", min_value=1, value=16, key="elgamal_key_size_enc")
 
-    # Button to generate ElGamal keys
     if st.button("Generate Keys"):
         q, g, private_key, public_key = generate_keys_elgamal(key_size)
-        
-        # Store keys in session state for later use
         st.session_state['elgamal_q'] = q
         st.session_state['elgamal_g'] = g
         st.session_state['elgamal_private_key'] = private_key
         st.session_state['elgamal_public_key'] = public_key
-
         st.success("Keys generated successfully!")
 
-    # Display generated keys if they exist in session
     if 'elgamal_q' in st.session_state:
         st.write("Prime Number (q):", st.session_state['elgamal_q'])
     if 'elgamal_g' in st.session_state:
@@ -969,30 +954,19 @@ if encryption_scheme == "ElGamal":
     if 'elgamal_private_key' in st.session_state:
         st.write("Private Key (keep this secret!):", st.session_state['elgamal_private_key'])
 
-    # Section: ElGamal Encryption
     st.title("ElGamal Encryption (Asymmetric)")
 
-    # User inputs plaintext
     plaintext = st.text_input("Enter the plaintext message:", key="elgamal_plaintext_enc")
-
-    # Button to perform encryption
     encrypt_button = st.button("Encrypt Message")
 
-    # Encrypt the message if keys are available and plaintext is entered
     if encrypt_button and plaintext:
-        if all(k in st.session_state for k in ('elgamal_q', 'elgamal_g', 'elgamal_public_key')):
-            ciphertext = encrypt_elgamal(
-                plaintext,
-                st.session_state['elgamal_q'],
-                st.session_state['elgamal_g'],
-                st.session_state['elgamal_public_key']
-            )
+        if 'elgamal_q' in st.session_state and 'elgamal_g' in st.session_state and 'elgamal_public_key' in st.session_state:
+            ciphertext = encrypt_elgamal(plaintext, st.session_state['elgamal_q'], st.session_state['elgamal_g'], st.session_state['elgamal_public_key'])
             st.write("Encrypted Message:")
             for pair in ciphertext:
                 st.write(f"({pair[0]}, {pair[1]})")
         else:
-            st.error("Please generate keys before encryption.")
-
+            st.error("Please generate keys before encryption")
 
     # ElGamal Decryption Section
     st.title("ElGamal Decryption")
@@ -1001,6 +975,15 @@ if encryption_scheme == "ElGamal":
     ciphertext_input = st.text_area("Enter the ciphertext (as ordered pairs separated by commas, e.g., (123,456),(789,012)):", height=200, key="elgamal_ciphertext_dec")
 
     def parse_ciphertext_input(ciphertext_str):
+        """
+    Parses a string of ciphertext pairs into a list of tuples.
+
+    Parameters:
+        ciphertext_str (str): The input string from the user, e.g., "(123,456),(789,012)"
+
+    Returns:
+        list of tuples: Parsed ciphertext pairs [(123,456), (789,012), ...]
+    """
         try:
             tuple_strs = ciphertext_str.replace(' ', '').split('),(')
             tuple_strs[0] = tuple_strs[0].lstrip('(')
