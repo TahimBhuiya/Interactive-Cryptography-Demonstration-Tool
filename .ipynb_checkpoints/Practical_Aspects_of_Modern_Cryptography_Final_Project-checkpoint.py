@@ -1255,13 +1255,15 @@ elif encryption_scheme == "Blum-Goldwasser":
 
     
 
-    # Display initial seed
+    # Display the initial seed if available
     if "initial_seed" in st.session_state:
         st.subheader("Initial Seed")
         st.write("Initial Seed:", st.session_state["initial_seed"])
 
-    # Decrypt section
+    # Section title for decryption
     st.title("Blum-Goldwasser Decryption")
+
+    # User inputs: ciphertext, initial seed, and private/public keys
     ciphertext_input = st.text_input("Enter the ciphertext (comma-separated):")
     initial_seed_str = st.text_input("Enter the initial seed:")
     p_input_str = st.text_input("Enter the value of p:")
@@ -1270,24 +1272,38 @@ elif encryption_scheme == "Blum-Goldwasser":
     b_input_str = st.text_input("Enter the value of b:")
     N_input_str = st.text_input("Enter the value of N:")
 
+    # Button to trigger decryption
     decrypt_button = st.button("Decrypt")
 
     if decrypt_button:
         try:
+            # Parse the ciphertext string into a list of integers
             ciphertext = [int(bit) for bit in ciphertext_input.split(",")]
+
+            # Convert all inputs from string to integers, checking for non-empty input
             initial_seed = int(initial_seed_str.strip()) if initial_seed_str.strip() else None
             p_input = int(p_input_str.strip()) if p_input_str.strip() else None
             q_input = int(q_input_str.strip()) if q_input_str.strip() else None
             a_input = int(a_input_str.strip()) if a_input_str.strip() else None
             b_input = int(b_input_str.strip()) if b_input_str.strip() else None
             N_input = int(N_input_str.strip()) if N_input_str.strip() else None
-            
-            plaintext = bg_decrypt_message(ciphertext, initial_seed, N_input, (p_input, q_input, a_input, b_input))
+
+            # Call decryption function with all required parameters
+            plaintext = bg_decrypt_message(
+                ciphertext,
+                initial_seed,
+                N_input,
+                (p_input, q_input, a_input, b_input)
+            )
+
+            # Format the plaintext list for display
             formatted_plaintext = " ".join(map(str, plaintext))
             st.success("Decryption successful!")
             st.write("Plaintext:", formatted_plaintext)
+
         except Exception as e:
             st.error(f"Decryption failed: {str(e)}")
+
 
 
 
