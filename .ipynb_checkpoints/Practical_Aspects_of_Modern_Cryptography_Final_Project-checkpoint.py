@@ -1186,52 +1186,69 @@ elif encryption_scheme == "3DES":
 
 
 elif encryption_scheme == "Blum-Goldwasser":
+    # Section title for key generation
     st.title("Blum-Goldwasser Key Generation")
 
-    # Get bit length for primes
+    # Prompt user for bit length to generate two large primes (p and q)
     bit_length = st.number_input("Enter the bit length for primes (e.g., 16, 32, 64, 128, 256):", min_value=16, step=1)
 
-    # Generate keys
+    # Button to generate keys
     generate_keys = st.button("Generate Keys")
     if generate_keys:
+        # Generate p, q (both ≡ 3 mod 4), and extended Euclidean values a, b, then compute N = p*q
         p, q, a, b, N = generate_bg_keys(bit_length)
+
+        # Store the generated keys in session state
         st.session_state["public_key"] = N
         st.session_state["private_key_p"] = p
         st.session_state["private_key_q"] = q
         st.session_state["private_key_a"] = a
         st.session_state["private_key_b"] = b
         st.session_state["keys_generated"] = True
+
         st.success("Keys generated successfully!")
 
-    # Display keys
+    # Display the generated public and private keys if available
     if st.session_state.get("keys_generated", False):
         st.subheader("Generated Keys")
         st.write("Public Key (N):", st.session_state["public_key"])
-        st.write("Private Key (p, q, a, b):", st.session_state["private_key_p"], ",",
-                 st.session_state["private_key_q"], ",", st.session_state["private_key_a"], ",", st.session_state["private_key_b"])
+        st.write("Private Key (p, q, a, b):",
+                 st.session_state["private_key_p"], ",",
+                 st.session_state["private_key_q"], ",",
+                 st.session_state["private_key_a"], ",",
+                 st.session_state["private_key_b"])
 
-    # Encrypt section
+    # Section for Blum-Goldwasser encryption
     st.title("Blum-Goldwasser Encryption (Asymmetric)")
+
+    # Prompt user to enter plaintext in binary format (e.g., 010101)
     plaintext_input = st.text_input("Enter the plaintext (binary):")
     public_key = st.session_state.get("public_key", 0)
 
+    # Button to trigger encryption
     encrypt_button = st.button("Encrypt")
-
     if encrypt_button:
         try:
+            # Convert input binary string to list of integers
             plaintext = [int(bit) for bit in plaintext_input.strip()]
+
+            # Encrypt using the Blum-Goldwasser encryption function
             ciphertext, initial_seed = bg_encrypt_message(plaintext, public_key)
+
+            # Format ciphertext for display
             formatted_ciphertext = ", ".join(map(str, ciphertext))
             st.session_state["ciphertext"] = formatted_ciphertext
             st.session_state["initial_seed"] = initial_seed
+
             st.success("Encryption successful!")
         except Exception as e:
             st.error(f"Encryption failed: {str(e)}")
 
-    # Display ciphertext
+    # Display the encrypted output if available
     if "ciphertext" in st.session_state:
         st.subheader("Ciphertext")
         st.write("Ciphertext:", st.session_state["ciphertext"])
+
 
 
 
