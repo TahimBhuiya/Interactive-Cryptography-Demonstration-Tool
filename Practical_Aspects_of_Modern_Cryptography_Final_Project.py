@@ -1530,25 +1530,41 @@ elif encryption_scheme == "Elgamal and 3DES (Hybrid)":
     # ElGamal Encryption Section
     st.title("ElGamal Key Generation")
 
-    # Get Key Size from User for Encryption
-    key_size = st.number_input("Enter the key size in bits (preferably 16, 32, 64, 128, 256): ", min_value=1, value=16, key="elgamal_key_size_enc")
+    # Ask user for key size to generate appropriate prime numbers
+    key_size = st.number_input(
+        "Enter the key size in bits (preferably 16, 32, 64, 128, 256): ",
+        min_value=1,
+        value=16,
+        key="elgamal_key_size_enc"
+    )
 
+    # Generate ElGamal keys when user clicks the button
     if st.button("Generate Keys"):
+        # Generate ElGamal public/private key pair and parameters
         q, g, private_key, public_key = generate_keys_elgamal(key_size)
+
+        # Store values in session state to persist them across reruns
         st.session_state['elgamal_q'] = q
         st.session_state['elgamal_g'] = g
         st.session_state['elgamal_private_key'] = private_key
         st.session_state['elgamal_public_key'] = public_key
+
+        # Display success message
         st.success("Keys generated successfully!")
 
+    # Display generated ElGamal parameters and keys (if available in session state)
     if 'elgamal_q' in st.session_state:
         st.write("Prime Number (q):", st.session_state['elgamal_q'])
+
     if 'elgamal_g' in st.session_state:
         st.write("Generator (g):", st.session_state['elgamal_g'])
+
     if 'elgamal_public_key' in st.session_state:
         st.write("Public Key:", st.session_state['elgamal_public_key'])
+
     if 'elgamal_private_key' in st.session_state:
         st.write("Private Key (keep this secret!):", st.session_state['elgamal_private_key'])
+
 
     st.title("ElGamal Encryption (Asymmetric)")
 
