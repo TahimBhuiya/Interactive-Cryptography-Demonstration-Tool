@@ -1377,24 +1377,36 @@ elif encryption_scheme == "Elgamal and DES (Hybrid)":
 
 
     
+    # Section: DES Encryption (Symmetric)
     st.title("DES Encryption (Symmetric)")
-
-    # Key input
+    
+    # User input: DES key (must be 8 characters = 64 bits)
     key_input = st.text_input("Enter the DES key (8 characters):", key="des_key")
-
-    # Plaintext input
-    plaintext_input = st.text_area("Enter ciphertext from 'Elgamal Encryption' as ordered pairs separated by commas such as (123, 456),(789, 321):", height=200,key="des_plaintext")
-
-    # Encryption button
+    
+    # User input: Plaintext to be encrypted
+    # In this hybrid case, the plaintext is the ciphertext output from ElGamal encryption
+    plaintext_input = st.text_area(
+        "Enter ciphertext from 'Elgamal Encryption' as ordered pairs separated by commas such as (123, 456),(789, 321):",
+        height=200,
+        key="des_plaintext"
+    )
+    
+    # Button to trigger DES encryption
     encrypt_button = st.button("Encrypt")
-
+    
+    # Validate inputs and perform encryption
     if encrypt_button and key_input and plaintext_input:
+        # Ensure DES key is exactly 8 characters
         if len(key_input) != 8:
             st.error("Error: Key must be 8 characters.")
         else:
+            # Encrypt the plaintext using DES
             cipher_text = encrypt_des(plaintext_input.encode(), key_input.encode())
+    
+            # Display the encrypted output in binary format
             st.write("Cipher Text in Binary:")
             st.write(''.join(format(byte, '08b') for byte in cipher_text))
+
 
 
 
