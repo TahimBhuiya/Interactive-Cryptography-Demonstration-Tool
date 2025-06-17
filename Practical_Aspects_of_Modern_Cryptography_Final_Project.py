@@ -1459,23 +1459,36 @@ elif encryption_scheme == "Elgamal and DES (Hybrid)":
 
 
 
-    # ElGamal Decryption Section
+    # Section: ElGamal Decryption
     st.title("ElGamal Decryption")
-
-    # Prompt the user to enter the ciphertext
-    ciphertext_input = st.text_area("Enter the ciphertext (as ordered pairs separated by commas, e.g., (123,456),(789,012)):", height=200, key="elgamal_ciphertext_dec")
-
+    
+    # User input: ciphertext as a string of ordered pairs
+    ciphertext_input = st.text_area(
+        "Enter the ciphertext (as ordered pairs separated by commas, e.g., (123,456),(789,012)):",
+        height=200,
+        key="elgamal_ciphertext_dec"
+    )
+    
+    # Helper function to parse ciphertext string into a list of integer tuples
     def parse_ciphertext_input(ciphertext_str):
         try:
+            # Remove whitespace and split input into tuple strings
             tuple_strs = ciphertext_str.replace(' ', '').split('),(')
+            
+            # Clean up leading '(' from first tuple and trailing ')' from last tuple
             tuple_strs[0] = tuple_strs[0].lstrip('(')
             tuple_strs[-1] = tuple_strs[-1].rstrip(')')
+            
+            # Convert each string tuple into an actual (int, int) tuple
             tuples = [tuple(map(int, t.split(','))) for t in tuple_strs]
             return tuples
         except ValueError:
+            # Return an empty list if parsing fails
             return []
-
+    
+    # Parse the user's ciphertext input into a list of tuples
     ciphertext = parse_ciphertext_input(ciphertext_input)
+
 
    
 
