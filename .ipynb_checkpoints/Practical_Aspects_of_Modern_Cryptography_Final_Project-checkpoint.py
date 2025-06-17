@@ -1567,18 +1567,32 @@ elif encryption_scheme == "Elgamal and 3DES (Hybrid)":
 
 
     st.title("ElGamal Encryption (Asymmetric)")
-
+    
+    # Input field for the user to enter the plaintext message to encrypt
     plaintext = st.text_input("Enter the plaintext message:", key="elgamal_plaintext_enc")
+    
+    # Button to trigger encryption when clicked
     encrypt_button = st.button("Encrypt Message")
-
+    
     if encrypt_button and plaintext:
+        # Check if ElGamal keys (q, g, public key) exist in session state
         if 'elgamal_q' in st.session_state and 'elgamal_g' in st.session_state and 'elgamal_public_key' in st.session_state:
-            ciphertext = encrypt_elgamal(plaintext, st.session_state['elgamal_q'], st.session_state['elgamal_g'], st.session_state['elgamal_public_key'])
+            # Perform ElGamal encryption on the plaintext using stored keys
+            ciphertext = encrypt_elgamal(
+                plaintext,
+                st.session_state['elgamal_q'],
+                st.session_state['elgamal_g'],
+                st.session_state['elgamal_public_key']
+            )
+            
+            # Display the encrypted message as pairs (usually tuples of integers)
             st.write("Encrypted Message:")
             for pair in ciphertext:
                 st.write(f"({pair[0]}, {pair[1]})")
         else:
+            # Prompt user to generate keys first if keys are missing
             st.error("Please generate keys before encryption")
+
 
 
 
