@@ -1411,33 +1411,52 @@ elif encryption_scheme == "Elgamal and DES (Hybrid)":
 
 
 
-
-
+    
+    
+    # Section: DES Decryption
     st.title("DES Decryption")
+    
+    # User input: DES key (must be exactly 8 characters)
     key_input = st.text_input("Enter the DES key (8 characters):", key="des_key_input")
-
-    # Ciphertext input
-    ciphertext_input =st.text_area("Enter the ciphertext from 'DES Encryption' (in binary),", height=200, key="des_ciphertext_input")
+    
+    # User input: Ciphertext in binary format (output from previous DES encryption)
+    ciphertext_input = st.text_area(
+        "Enter the ciphertext from 'DES Encryption' (in binary):",
+        height=200,
+        key="des_ciphertext_input"
+    )
+    
+    # Button to trigger decryption
     decrypt_button = st.button("Decrypt")
-
+    
+    # Validate inputs and perform decryption
     if decrypt_button and key_input and ciphertext_input:
+        # Ensure key is 8 characters
         if len(key_input) != 8:
             st.error("Error: Key must be 8 characters.")
         else:
             try:
+                # Convert binary string input into bytes
                 ciphertext = int(ciphertext_input, 2).to_bytes(len(ciphertext_input) // 8, byteorder='big')
             except ValueError:
                 st.error("Error: Ciphertext must be in binary format.")
                 st.stop()
+    
+            # Ensure ciphertext length is valid for DES (must be multiple of 64 bits = 8 bytes)
             if len(ciphertext) % 8 != 0 or len(key_input) != 8:
                 st.error("Error: Ciphertext must be a multiple of 64 bits and the key must be 8 characters.")
                 st.stop()
             else:
+                # Decrypt using DES
                 plain_text = decrypt_des(ciphertext, key_input.encode())
-            # Remove padding
+    
+                # Remove PKCS5/7-style padding (last byte indicates how many padding bytes were added)
                 padding_len = plain_text[-1]
                 decrypted_plain_text = plain_text[:-padding_len]
+    
+                # Display the final plaintext message
                 st.write("Decrypted Plain Text:", decrypted_plain_text.decode())
+
 
 
     # ElGamal Decryption Section
