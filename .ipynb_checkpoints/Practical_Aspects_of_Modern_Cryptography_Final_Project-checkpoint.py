@@ -1640,41 +1640,52 @@ elif encryption_scheme == "Elgamal and 3DES (Hybrid)":
 
 
     st.title("3DES Decryption")
-    # Key input
+    
+    # Get user input for three 8-character DES keys
     key1_input_dec = st.text_input("Enter the first DES key (8 characters):", key="des_key1_dec")
     key2_input_dec = st.text_input("Enter the second DES key (8 characters):", key="des_key2_dec")
     key3_input_dec = st.text_input("Enter the third DES key (8 characters):", key="des_key3_dec")
-
-    # Ciphertext input
-    ciphertext_input_3des = st.text_area("Enter the ciphertext (in binary):", height=200,key="3des_ciphertext_dec")
-
-    # Decryption button
+    
+    # Get the ciphertext input in binary format from the user
+    ciphertext_input_3des = st.text_area("Enter the ciphertext (in binary):", height=200, key="3des_ciphertext_dec")
+    
+    # Button to trigger decryption
     decrypt_button_3des = st.button("Decrypt (3DES)")
-
+    
+    # Proceed only if all fields are filled and button is clicked
     if decrypt_button_3des and key1_input_dec and key2_input_dec and key3_input_dec and ciphertext_input_3des:
+        
+        # Validate that each key is 8 characters long
         if len(key1_input_dec) != 8 or len(key2_input_dec) != 8 or len(key3_input_dec) != 8:
             st.error("Error: Keys must be 8 characters each.")
         else:
             try:
+                # Convert binary string input to bytes
                 ciphertext = int(ciphertext_input_3des, 2).to_bytes(len(ciphertext_input_3des) // 8, byteorder='big')
             except ValueError:
                 st.error("Error: Ciphertext must be in binary format.")
                 st.stop()
+    
+            # Ensure ciphertext is a multiple of 8 bytes (64 bits), and keys are valid
             if len(ciphertext) % 8 != 0 or len(key1_input_dec) != 8 or len(key2_input_dec) != 8 or len(key3_input_dec) != 8:
                 st.error("Error: Ciphertext must be a multiple of 64 bits and the key must be 8 characters.")
-                st.stop()                
+                st.stop()
             else:
-            # Decrypt the ciphertext using 3DES
-            # Decrypt the ciphertext using 3DES
-                plain_text_3des = decrypt_3des(ciphertext, key1_input_dec.encode(), key2_input_dec.encode(), key3_input_dec.encode())
-            
-            # Extract padding length
-            #     padding_len = plain_text_3des[-1]
-            
-            # # Remove padding
-            #     decrypted_plain_text_3des = plain_text_3des[:-padding_len]
-            
+                # Decrypt the ciphertext using Triple DES
+                plain_text_3des = decrypt_3des(
+                    ciphertext,
+                    key1_input_dec.encode(),
+                    key2_input_dec.encode(),
+                    key3_input_dec.encode()
+                )
+    
+                # Optional padding removal block — commented out
+                # padding_len = plain_text_3des[-1]
+                # decrypted_plain_text_3des = plain_text_3des[:-padding_len]
+    
+                # Output the decrypted plaintext (decoded from bytes to string)
                 st.write("Decrypted Plain Text:", plain_text_3des.decode())
+
 
 
 
