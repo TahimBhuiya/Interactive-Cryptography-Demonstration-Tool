@@ -1598,35 +1598,41 @@ elif encryption_scheme == "Elgamal and 3DES (Hybrid)":
 
     
     st.title("3DES Encryption (Symmetric)")
-
-    # Key input
+    
+    # Key inputs: User provides three DES keys (each 8 characters = 64 bits)
     key1_input = st.text_input("Enter the first DES key (8 characters):", key="des_key1_enc")
     key2_input = st.text_input("Enter the second DES key (8 characters):", key="des_key2_enc")
     key3_input = st.text_input("Enter the third DES key (8 characters):", key="des_key3_enc")
-
-    # Plaintext input
-    plaintext_input_3des = st.text_area("Enter ciphertext from 'Elgamal Encryption' as ordered pairs separated by commas such as (123, 456),(789, 321):", height=200,key="3des_plaintext_enc")
-
-    # Encryption button
+    
+    # Plaintext input: This is the ciphertext output from the ElGamal step,
+    # entered here as a string of tuples (e.g., (123, 456),(789, 321))
+    plaintext_input_3des = st.text_area(
+        "Enter ciphertext from 'Elgamal Encryption' as ordered pairs separated by commas such as (123, 456),(789, 321):",
+        height=200,
+        key="3des_plaintext_enc"
+    )
+    
+    # Button to trigger encryption
     encrypt_button_3des = st.button("Encrypt (3DES)")
-
+    
+    # Proceed only if all keys and the input plaintext are provided
     if encrypt_button_3des and key1_input and key2_input and key3_input and plaintext_input_3des:
+        # Check that each key is exactly 8 characters long (64-bit DES keys)
         if len(key1_input) != 8 or len(key2_input) != 8 or len(key3_input) != 8:
-            st.error("Error: Keys must be 64 bits each.")
+            st.error("Error: Keys must be 64 bits each.")  # Show error if any key is invalid
         else:
-            # Convert keys and plaintext to bit arrays
-            # key1_des = key1_input.encode()
-            # key2_des = key2_input.encode()
-            # key3_des = key3_input.encode()
-            # plaintext_3des = pad_message(plaintext_input_3des.encode())
-
-            # Encrypt the plaintext using 3DES
-            cipher_text_3des = encrypt_3des(plaintext_input_3des.encode(), key1_input.encode(), key2_input.encode(), key3_input.encode())
-
-            # Display ciphertext
+            # Encrypt the input (string format) using Triple DES
+            cipher_text_3des = encrypt_3des(
+                plaintext_input_3des.encode(),
+                key1_input.encode(),
+                key2_input.encode(),
+                key3_input.encode()
+            )
+    
+            # Display the ciphertext as a binary string
             st.write("Cipher Text for 3DES (binary):")
-            
             st.write(''.join(format(byte, '08b') for byte in cipher_text_3des))
+
 
  
 
