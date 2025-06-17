@@ -1312,20 +1312,31 @@ elif encryption_scheme == "Blum-Goldwasser":
 
 
 elif encryption_scheme == "Elgamal and DES (Hybrid)":
-    # ElGamal Encryption Section
+    # Section: ElGamal Key Generation
     st.title("ElGamal Key Generation")
 
-    # Get Key Size from User for Encryption
-    key_size = st.number_input("Enter the key size in bits (preferably 16, 32, 64, 128, 256): ", min_value=1, value=16, key="elgamal_key_size_enc")
+    # User input: desired key size for ElGamal keys
+    key_size = st.number_input(
+        "Enter the key size in bits (preferably 16, 32, 64, 128, 256): ",
+        min_value=1,
+        value=16,
+        key="elgamal_key_size_enc"
+    )
 
+    # Button to trigger key generation
     if st.button("Generate Keys"):
+        # Generate ElGamal keys (q = prime, g = generator, private/public keys)
         q, g, private_key, public_key = generate_keys_elgamal(key_size)
+
+        # Store the generated keys in session state
         st.session_state['elgamal_q'] = q
         st.session_state['elgamal_g'] = g
         st.session_state['elgamal_private_key'] = private_key
         st.session_state['elgamal_public_key'] = public_key
+
         st.success("Keys generated successfully!")
 
+    # Display the generated key components
     if 'elgamal_q' in st.session_state:
         st.write("Prime Number (q):", st.session_state['elgamal_q'])
     if 'elgamal_g' in st.session_state:
@@ -1335,19 +1346,33 @@ elif encryption_scheme == "Elgamal and DES (Hybrid)":
     if 'elgamal_private_key' in st.session_state:
         st.write("Private Key (keep this secret!):", st.session_state['elgamal_private_key'])
 
+    # Section: ElGamal Encryption
     st.title("ElGamal Encryption (Asymmetric)")
 
+    # Input for plaintext message to be encrypted using ElGamal
     plaintext = st.text_input("Enter the plaintext message:", key="elgamal_plaintext_enc")
+
+    # Button to trigger encryption
     encrypt_button = st.button("Encrypt Message")
 
     if encrypt_button and plaintext:
+        # Ensure keys are already generated
         if 'elgamal_q' in st.session_state and 'elgamal_g' in st.session_state and 'elgamal_public_key' in st.session_state:
-            ciphertext = encrypt_elgamal(plaintext, st.session_state['elgamal_q'], st.session_state['elgamal_g'], st.session_state['elgamal_public_key'])
+            # Perform encryption and get list of ciphertext tuples
+            ciphertext = encrypt_elgamal(
+                plaintext,
+                st.session_state['elgamal_q'],
+                st.session_state['elgamal_g'],
+                st.session_state['elgamal_public_key']
+            )
+
+            # Display the resulting ciphertext as (c1, c2) pairs
             st.write("Encrypted Message:")
             for pair in ciphertext:
                 st.write(f"({pair[0]}, {pair[1]})")
         else:
             st.error("Please generate keys before encryption")
+
 
 
 
