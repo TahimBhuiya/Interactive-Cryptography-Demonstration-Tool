@@ -1725,27 +1725,32 @@ elif encryption_scheme == "Elgamal and 3DES (Hybrid)":
 
    
 
-# Prompt the user to enter the prime number (q) as a string
+    # Prompt the user to enter the prime number (q) used during key generation
     q_dec_str = st.text_input("Enter Prime number (q) from original key generation:")
-
-# Convert the input string to an integer if it's not empty
+    
+    # Convert the input string to an integer if it's not empty
     q_dec = int(q_dec_str) if q_dec_str.strip() else None
     
-    
-# Prompt the user to enter the private key as a string
+    # Prompt the user to enter their private key (used for decryption)
     private_key_dec_str = st.text_input("Enter your Private Key from original key generation:")
-
-# Convert the input string to an integer if it's not empty
+    
+    # Convert the private key string to an integer if it's not empty
     private_key_dec = int(private_key_dec_str) if private_key_dec_str.strip() else None
     
+    # Button to trigger the ElGamal decryption
     decrypt_button = st.button("Decrypt Ciphertext")
-
+    
+    # Perform decryption only if all necessary fields are filled
     if decrypt_button and ciphertext and q_dec and private_key_dec:
         try:
+            # Call the ElGamal decryption function with the ciphertext, prime q, and private key
             decrypted_message = decrypt_elgamal(ciphertext, q_dec, private_key_dec)
+    
+            # Display the decrypted plaintext
             st.write("Decrypted Message:", decrypted_message)
         except Exception:
+            # Handle any errors that occur during decryption (e.g., format or math issues)
             st.error("An error occurred during decryption.")
-   
+
     
      
